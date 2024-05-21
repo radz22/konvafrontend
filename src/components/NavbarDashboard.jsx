@@ -20,7 +20,7 @@ const NavbarDashboard = () => {
     }, 1000);
   }, []);
   return (
-    <div className="w-full flex items-center justify-between  shadow-sm	 shadow-[#dddada]   relative bg-white py-4 px-4">
+    <div className="w-full flex items-center justify-between  shadow-sm	 shadow-[#dddada]   relative bg-white py-4 px-4 h-[10vh]">
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"

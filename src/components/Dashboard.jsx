@@ -5,11 +5,11 @@ import TableDashboard from "./TableDashboard";
 
 const Dashboard = () => {
   return (
-    <div className="w-full h-screen   overflow-x-hidden ">
+    <div className="w-full h-screen   overflow-x-hidden bg-[#dbdbdb]">
       <div>
         <NavbarDashboard />
       </div>
-      <div>
+      <div className="w-full h-[90vh]">
         <SideBarDashboard />
       </div>
     </div>
