@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, Fragment } from "react";
 import TableDashboard from "./TableDashboard";
 import { Stage, Layer, Image as KonvaImage, Circle } from "react-konva";
 
@@ -14,16 +14,14 @@ const SideBarDashboard = () => {
   const [openText, setOpenText] = useState(false);
   const [textChange, setTextChange] = useState("");
   const [count, setCount] = useState(1);
-  const [selectedId, setSelectedId] = useState(null);
   const [textId, setTextId] = useState(null);
-  const stageRef = React.useRef();
+  const stageRef = React.useRef(null);
   const [images, setImages] = React.useState([]);
   const [id, setId] = useState(null);
   const [text, setText] = useState([]);
   const [openShapes, setOpenShapes] = useState(false);
   const [color, setColor] = useState("");
-  const [bgColor, setBgColor] = useState("white");
-  const [base64Image, setBase64Image] = useState("");
+  const [fontSize, setFontSize] = useState(0);
   const handleFileInputChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -42,10 +40,15 @@ const SideBarDashboard = () => {
     const clickedOnEmpty = e.target === e.target.getStage();
     if (clickedOnEmpty) {
       setTextId(null);
-      setSelectedId(null);
     }
   };
+  const handleTextDoubleClick = (id) => {
+    // Deselect text on double-click
 
+    if (textId === id) {
+      setTextId(null);
+    }
+  };
   const handleOpen = () => {
     setOpen(!open);
     setOpenText(false);
@@ -58,18 +61,8 @@ const SideBarDashboard = () => {
     setOpenShapes(false);
   };
 
-  const handleSelect = (id) => {
-    setSelectedId(id);
-  };
   const handleTextSelect = (id) => {
     setTextId(id);
-  };
-
-  const handleChange = (newAttrs, id) => {
-    const newImages = images.slice();
-    console.log(newImages);
-    newImages[id] = newAttrs;
-    setImages(newImages);
   };
 
   const handleTextChange = (newAttrs) => {
@@ -240,11 +233,6 @@ const SideBarDashboard = () => {
     ]);
   };
 
-  const handleColorChange = (event) => {
-    setBgColor(event.target.value);
-  };
-
-  const [fontSize, setFontSize] = useState(0);
   const handleIncrement = () => {
     const getValue = text.map((item) =>
       item.id === id ? { ...item, fontsize: item.fontsize + 1 } : item
@@ -285,6 +273,15 @@ const SideBarDashboard = () => {
     ]);
   };
 
+  const handleExport = () => {
+    const dataURL = stageRef.current.toDataURL();
+    const link = document.createElement("a");
+    link.download = "stage.png";
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   return (
     <div className="w-full ">
       <div className="flex  ">
@@ -313,6 +310,14 @@ const SideBarDashboard = () => {
                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD0AAAA5CAYAAACF8yP/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAKLSURBVHgB7ZqBbeMgFIZfpBsgG5xHyAi5DbJBb4PLBskG7QbJBr0NfDeBu8FrJ0g3+MuTqUpdAw/Hrg3KJ6EoFhg+gzE8m6hAAGxMupjEJt1R6TjCLuWKe4TLFTdSVUC4aPEz4uQvLkO68z8mfqGckV6zIofO8ZA4U644wkgQZ5MqypEeYY14kcIh8aKFfeJrypEE4V7x7BggLHDOPXxAOoyM7+ED0uGbcC7chG/CIwubgmtbaY3P+9LGpEeTjiZtaSIwg3BlT6BFLsIdRhpSOQh3OeGKETBQWEbf8IWHKbzHODASoxKzCNuKG4wLQyGPuYRt5VPB8MhjTuGItExWcr9LWPW3/T+EE5wJx54zlfGEbSPYU9FjT15psGzKY6HWL+I0XHpcYduIh0CFO08Zabj0PiOOXKCqU3Y+YduIbaTBm0j5mPyRvl6w+YSdhtSByhmKRYC9eNwt25NPIz2tsNOQy7Xi9lxuz+88dYU4Ty28chqzNz/3gbzPJv1arVbPpEB63uT913N8HajnxZQ50neC8KT23uMbKg2E7+938o40dkG7xdSIS56KSkIx1AWZ/PZUEmgDBxrqonod/c/fPiRPOW/68bHm1nBPJYE24KDZbDSlDXdteImLEhegm+SKFN8h3utFimuGe0OlAd0qLp9Z3fZkpcwbe6xtKQcckRN0wYSQeE1LB20k1IURWXXZod5k29vwT1BBeYSjIw+0VEzj/iAOw/MiD/5hPvsQ/9F3EG1IR7NlrEw62zJP5ue/Sa/UhpZ+BsosE+jj2qks/5mNdrnJGI+/lANI21rGyGvP7cgzhrH857QPtM9iuefrBGF565nnZ4td8PEyT0aALErcIAPjys8zpuANh8I3zdRcplUAAAAASUVORK5CYII="
                 className="w-8	 h-8	"
               />
+            </div>
+            <div className="mt-10">
+              <button
+                onClick={handleExport}
+                className="  bg-[#0bd0ea] text-base	text-white px-3 py-2 rounded-lg	"
+              >
+                Export
+              </button>
             </div>
           </div>
 
@@ -423,14 +428,6 @@ const SideBarDashboard = () => {
               />
             </div>
 
-            <div className="">
-              <input
-                type="color"
-                value={bgColor}
-                onChange={handleColorChange}
-                className="w-10  outline-none h-10 mt-1"
-              />
-            </div>
             <div>
               <button
                 className="bg-[#D9D9D9] px-3 rounded-md text-2xl"
@@ -521,40 +518,43 @@ const SideBarDashboard = () => {
             </div>
           </div>
           <div className="w-full h-auto  flex items-center justify-center">
-            <div c>
-              <Stage
-                onMouseDown={checkDeselect}
-                onTouchStart={checkDeselect}
-                width={1100}
-                height={550}
-                ref={stageRef}
-                style={{ width: 1100, backgroundColor: bgColor }}
-              >
-                <Layer>
-                  <div>
-                    {text.map((item, index) => (
-                      <div
-                        draggable
-                        onClick={() => {
-                          setId(item.id);
-                          handleGetSize(item.id);
-                        }}
-                      >
-                        <AddText
-                          key={index}
-                          item={item}
-                          isSelected={index === textId}
-                          onSelect={() => handleTextSelect(index)}
-                          onChange={(newAttrs) =>
-                            handleTextChange(newAttrs, index)
-                          }
-                          input={textChange}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </Layer>
-              </Stage>
+            <div>
+              <Fragment>
+                <Stage
+                  style={{ width: 1100, backgroundColor: "white" }}
+                  onMouseDown={checkDeselect}
+                  onTouchStart={checkDeselect}
+                  width={1100}
+                  height={550}
+                  ref={stageRef}
+                >
+                  <Layer>
+                    <div>
+                      {text.map((item, index) => (
+                        <div
+                          draggable
+                          onClick={() => {
+                            setId(item.id);
+                            handleGetSize(item.id);
+                          }}
+                          onDblClick={() => handleTextDoubleClick(index)}
+                        >
+                          <AddText
+                            key={index}
+                            item={item}
+                            isSelected={index === textId}
+                            onSelect={() => handleTextSelect(index)}
+                            onChange={(newAttrs) =>
+                              handleTextChange(newAttrs, index)
+                            }
+                            input={textChange}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </Layer>
+                </Stage>
+              </Fragment>
             </div>
           </div>
         </div>
