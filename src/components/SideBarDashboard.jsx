@@ -6,7 +6,6 @@ import useImage from "use-image";
 import UrlImages from "./UrlImages";
 import DraggbleImages from "./DraggbleImages";
 import SideBartext from "./SideBartext";
-import { image, shapes } from "../data/Data";
 import Shapes from "./Shapes";
 import AddText from "./AddText";
 
@@ -23,6 +22,20 @@ const SideBarDashboard = () => {
   const [text, setText] = useState([]);
   const [openShapes, setOpenShapes] = useState(false);
   const [color, setColor] = useState("");
+  const [bgColor, setBgColor] = useState("white");
+  const [base64Image, setBase64Image] = useState("");
+  const handleFileInputChange = (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          setImages([...images, reader.result]);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const checkDeselect = (e) => {
     // deselect when clicked on empty area
@@ -43,14 +56,6 @@ const SideBarDashboard = () => {
     setOpenText(!openText);
     setOpen(false);
     setOpenShapes(false);
-  };
-
-  const handleClick = (src) => {
-    // Get the click position relative to the stage
-    setCount(count + 1);
-
-    // Add the image to the beginning of the images array
-    setImages([{ id: count, x: 400, y: 400, src }, ...images]);
   };
 
   const handleSelect = (id) => {
@@ -235,8 +240,6 @@ const SideBarDashboard = () => {
     ]);
   };
 
-  const [bgColor, setBgColor] = useState("white");
-
   const handleColorChange = (event) => {
     setBgColor(event.target.value);
   };
@@ -264,6 +267,22 @@ const SideBarDashboard = () => {
     const item = text.find((item) => item.id === fontid);
 
     setFontSize(item ? item.fontsize : 0);
+  };
+
+  const handleAddImages = (img) => {
+    setCount(count + 1);
+    setText([
+      ...text,
+      {
+        id: count,
+        type: "image",
+        x: 400,
+        y: 400,
+        height: 300,
+        width: 300,
+        src: img,
+      },
+    ]);
   };
 
   return (
@@ -310,14 +329,66 @@ const SideBarDashboard = () => {
 
           {open && (
             <div className="bg-[#1E1E1E] w-[11rem] h-[90vh]">
-              {image.map((item) => (
-                <div>
-                  <DraggbleImages
-                    src={item.src}
-                    onClick={() => handleClick(item.src)}
+              <div className="flex items-center justify-center mt-9 flex-col">
+                <div className="absolute ">
+                  <input
+                    type="file"
+                    className="hidden"
+                    id="fileInput"
+                    onChange={handleFileInputChange}
                   />
+                  <label
+                    htmlFor="fileInput"
+                    className=" bg-transparent text-base	text-white "
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="1em"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                      className="text-[#0bd0ea] text-5xl  "
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M11.5 15.577v-8.65l-2.33 2.33l-.708-.718L12 5l3.539 3.539l-.708.719L12.5 6.927v8.65zM6.616 19q-.691 0-1.153-.462T5 17.384v-2.423h1v2.423q0 .231.192.424t.423.192h10.77q.23 0 .423-.192t.192-.424v-2.423h1v2.423q0 .691-.462 1.153T17.384 19z"
+                      />
+                    </svg>
+                  </label>
                 </div>
-              ))}
+              </div>
+
+              <div className="mt-7">
+                <h1 className="text-center text-white">Drag and Drop file</h1>
+              </div>
+
+              <div className="flex items-center justify-center mt-7 flex-col">
+                <div className="absolute ">
+                  <input
+                    type="file"
+                    className="hidden"
+                    id="fileInput"
+                    onChange={handleFileInputChange}
+                  />
+                  <label
+                    htmlFor="fileInput"
+                    className=" bg-[#0bd0ea] text-base	text-white px-7 py-2 rounded-lg	"
+                  >
+                    Browse
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center flex-col mt-8">
+                {images.map((item) => (
+                  <div className="mt-3">
+                    <img
+                      src={item}
+                      className="w-24 h-24"
+                      onClick={() => handleAddImages(item)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
           {openText && (
@@ -460,19 +531,6 @@ const SideBarDashboard = () => {
                 style={{ width: 1100, backgroundColor: bgColor }}
               >
                 <Layer>
-                  <div>
-                    {images.map((image, index) => (
-                      <div draggable onClick={() => setId(image.id)}>
-                        <UrlImages
-                          key={index}
-                          image={image}
-                          isSelected={index === selectedId}
-                          onSelect={() => handleSelect(index)}
-                          onChange={(newAttrs) => handleChange(newAttrs, index)}
-                        />
-                      </div>
-                    ))}
-                  </div>
                   <div>
                     {text.map((item, index) => (
                       <div

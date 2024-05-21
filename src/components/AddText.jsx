@@ -1,20 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
-  Stage,
-  Layer,
+  Image as KonvaImage,
   Text,
   Transformer,
   Rect,
   Circle,
-  Ellipse,
   RegularPolygon,
   Star,
 } from "react-konva";
+import useImage from "use-image";
 
 const AddText = ({ item, isSelected, onSelect, onChange }) => {
   const shapeRef = useRef();
   const trRef = useRef();
   const [scale, setScale] = useState(1);
+  const [img] = useImage(item.src);
 
   useEffect(() => {
     if (isSelected) {
@@ -215,6 +215,45 @@ const AddText = ({ item, isSelected, onSelect, onChange }) => {
               ...item,
               x: e.target.x(),
               y: e.target.y(),
+            });
+          }}
+        />
+      )}
+
+      {item.type === "image" && (
+        <KonvaImage
+          image={img}
+          x={item.x}
+          y={item.y}
+          width={item.width}
+          height={item.height}
+          draggable
+          onClick={onSelect}
+          ref={shapeRef}
+          onTransformEnd={(e) => {
+            const node = shapeRef.current;
+            const scaleX = node.scaleX();
+            const scaleY = node.scaleY();
+
+            node.scaleX(1);
+            node.scaleY(1);
+
+            const newWidth = Math.round((node.width() * scaleX) / 20) * 20;
+            const newHeight = Math.round((node.height() * scaleY) / 20) * 20;
+
+            onChange({
+              ...item,
+              x: Math.round(node.x() / 20) * 20,
+              y: Math.round(node.y() / 20) * 20,
+              width: Math.max(5, newWidth),
+              height: Math.max(5, newHeight),
+            });
+          }}
+          onDragEnd={(e) => {
+            onChange({
+              ...item,
+              x: Math.round(e.target.x() / 20) * 20,
+              y: Math.round(e.target.y() / 20) * 20,
             });
           }}
         />
