@@ -8,6 +8,7 @@ import DraggbleImages from "./DraggbleImages";
 import SideBartext from "./SideBartext";
 import Shapes from "./Shapes";
 import AddText from "./AddText";
+import Pen from "./Pen";
 
 const SideBarDashboard = () => {
   const [open, setOpen] = useState(false);
@@ -22,6 +23,7 @@ const SideBarDashboard = () => {
   const [openShapes, setOpenShapes] = useState(false);
   const [color, setColor] = useState("");
   const [fontSize, setFontSize] = useState(0);
+  const [openPen, setOpenPen] = useState(false);
   const handleFileInputChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -35,13 +37,6 @@ const SideBarDashboard = () => {
     }
   };
 
-  const checkDeselect = (e) => {
-    // deselect when clicked on empty area
-    const clickedOnEmpty = e.target === e.target.getStage();
-    if (clickedOnEmpty) {
-      setTextId(null);
-    }
-  };
   const handleTextDoubleClick = (id) => {
     // Deselect text on double-click
 
@@ -53,12 +48,14 @@ const SideBarDashboard = () => {
     setOpen(!open);
     setOpenText(false);
     setOpenShapes(false);
+    setOpenPen(false);
   };
 
   const handleOpenText = () => {
     setOpenText(!openText);
     setOpen(false);
     setOpenShapes(false);
+    setOpenPen(false);
   };
 
   const handleTextSelect = (id) => {
@@ -147,6 +144,7 @@ const SideBarDashboard = () => {
     setOpenShapes(!openShapes);
     setOpen(false);
     setOpenText(false);
+    setOpenPen(false);
   };
 
   const handleInputChange = (e) => {
@@ -282,11 +280,32 @@ const SideBarDashboard = () => {
     link.click();
     document.body.removeChild(link);
   };
+
+  const handleOpenPen = () => {
+    setOpenPen(!openPen);
+    setOpen(false);
+    setOpenText(false);
+    setOpenShapes(false);
+  };
+
+  const [penId, setPenId] = useState(null);
+
+  const handleSelect = (id) => {
+    setPenId(id);
+  };
+
+  const resetSelect = (id) => {
+    if (penId == id) {
+      setPenId(null);
+    }
+
+    console.log(id);
+  };
   return (
     <div className="w-full ">
       <div className="flex  ">
         <div className="w-[20%] flex ">
-          <div className="w-[30%]	px-3 py-3  bg-[#525252]  h-screen flex items-center  flex-col h-[90vh] ">
+          <div className="w-[30%]	px-3 py-3  bg-[#525252]   flex items-center  flex-col h-[90vh] ">
             <div className="mt-10" onClick={handleOpenShapes}>
               <img
                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA+CAYAAAB3NHh5AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAANfSURBVHgB7ZqBdeIwDEDFvQ7ABmcmODrBhQmODegGpROQDa4b0A2OmwCYoO0E4SYoG+gkkrQpRIrjOMZ9L/89Pd4zjiUhYsuyR0hAIEYEOEAmjuljQTIlSUjGhTAvJAeSDcmeVByaBgsGODhKsiJ5a6FmTWK0QYMBLaDuc2znaJWMZAFfxWHMo+qDVfQOoz9nSz45PbI1xAdNkxaZMqePP+CfGanenWxQHJ6BO9u6Rs1hzGfiZxIDMjuSPeQz87Fo+0GybHjuQHJL6o/iXxo64DIm6n9lnryWDc/foT7Jpc7G9eRwhrKzU0u9U5Sd5vZxFA5jvgRJLFrqvlPGSmJx+El4ZOugnsfbCuM9foM4+C60P4Ebf4X2n7E4LL2jr+DGRmg34rLkmugzbccMaUMsEQ5GLA4f6hpR2/UooLyMHWNx+Ci0z8ENyeGXWBzeC+2/wI2V0P4ayzqcoMyype57Zaw4Eo/iGS0ltE0ttR8uczbOQrGLwynqrJRny1KQxilF/WrbwwN8bBF5ouNnOPoL+Cjq1T5HqicnGxSHvWNRAGDjn8E/k7KaGVXiQUbxxv4B/PLwqXSLAbG1kLou0Q/LusGDAS3AfDOfoRsZ8hIkDBwMcADzDX1mqYKXMJ7txQmMJ60MAlHOlC5gHjFONbloZypf8Xv/j2RTViYHBgYGBgYGBqLA9ZLJnLKaDVwJFI5gyKYue3hRmSny1gSuhM9c3UbZthjf6aDLkw1hHMbLo8gErkBIh7MzHX2UY2zs6N9hlA+aWx1Ye7IliMOZoCe/ShCQLg5bFfEwrwkb4Wt2ttXpQNRgvgxlqBM0yl0ifGPRJwW9OM6UUU6hI1heL+rp2abCuKEP25oXnwTcNl7fbcA2Uq40vcMp2MNRXkHkaGc9BuyjW2XWpXp4zQivle+0JD36KF+A+m22ddHnUemTgCPYM9I1Iv4rG8Gm00kc5ssQ96tbjnauWzW025QkQvsOHBRq0U3P+qZK395STkkhuIByksHt5qwvn7y/Kf17SUa6OHxzNpCWQnKFw+Dl3akd1F8v4n5ekhGfvL/DhSP8/hjwBycjk9NNdI9I0bS5qlhdlu7Br7NMdBuL0y+C7kmGDV5Szio+IpxCf0SVco56jm6VTilnla4R/g1hiCLK/wHLHjXuandbXwAAAABJRU5ErkJggg=="
@@ -305,7 +324,7 @@ const SideBarDashboard = () => {
                 className="w-8	 h-8	"
               />
             </div>
-            <div className="mt-10">
+            <div className="mt-10" onClick={handleOpenPen}>
               <img
                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD0AAAA5CAYAAACF8yP/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAKLSURBVHgB7ZqBbeMgFIZfpBsgG5xHyAi5DbJBb4PLBskG7QbJBr0NfDeBu8FrJ0g3+MuTqUpdAw/Hrg3KJ6EoFhg+gzE8m6hAAGxMupjEJt1R6TjCLuWKe4TLFTdSVUC4aPEz4uQvLkO68z8mfqGckV6zIofO8ZA4U644wkgQZ5MqypEeYY14kcIh8aKFfeJrypEE4V7x7BggLHDOPXxAOoyM7+ED0uGbcC7chG/CIwubgmtbaY3P+9LGpEeTjiZtaSIwg3BlT6BFLsIdRhpSOQh3OeGKETBQWEbf8IWHKbzHODASoxKzCNuKG4wLQyGPuYRt5VPB8MhjTuGItExWcr9LWPW3/T+EE5wJx54zlfGEbSPYU9FjT15psGzKY6HWL+I0XHpcYduIh0CFO08Zabj0PiOOXKCqU3Y+YduIbaTBm0j5mPyRvl6w+YSdhtSByhmKRYC9eNwt25NPIz2tsNOQy7Xi9lxuz+88dYU4Ty28chqzNz/3gbzPJv1arVbPpEB63uT913N8HajnxZQ50neC8KT23uMbKg2E7+938o40dkG7xdSIS56KSkIx1AWZ/PZUEmgDBxrqonod/c/fPiRPOW/68bHm1nBPJYE24KDZbDSlDXdteImLEhegm+SKFN8h3utFimuGe0OlAd0qLp9Z3fZkpcwbe6xtKQcckRN0wYSQeE1LB20k1IURWXXZod5k29vwT1BBeYSjIw+0VEzj/iAOw/MiD/5hPvsQ/9F3EG1IR7NlrEw62zJP5ue/Sa/UhpZ+BsosE+jj2qks/5mNdrnJGI+/lANI21rGyGvP7cgzhrH857QPtM9iuefrBGF565nnZ4td8PEyT0aALErcIAPjys8zpuANh8I3zdRcplUAAAAASUVORK5CYII="
                 className="w-8	 h-8	"
@@ -403,6 +422,16 @@ const SideBarDashboard = () => {
                 addHeading={addHeading}
                 addSubHeading={addSubHeading}
                 addLittleBitBody={addLittleBitBody}
+              />
+            </div>
+          )}
+
+          {openPen && (
+            <div className="bg-[#1E1E1E]  w-[5rem] h-[20rem] absolute left-[5.7em] top-[15em] rounded-md flex items-center justify-center">
+              <Pen
+                handleSelect={handleSelect}
+                penId={penId}
+                resetSelect={resetSelect}
               />
             </div>
           )}
@@ -522,8 +551,6 @@ const SideBarDashboard = () => {
               <Fragment>
                 <Stage
                   style={{ width: 1100, backgroundColor: "white" }}
-                  onMouseDown={checkDeselect}
-                  onTouchStart={checkDeselect}
                   width={1100}
                   height={550}
                   ref={stageRef}
