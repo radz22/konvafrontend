@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
@@ -35,12 +35,6 @@ const App = () => {
     setShowVerticalyCenteredModal(!false);
   };
 
-  // const handleSignup = () => {
-  //   axios.post("http://localhost:3000/userRoutes/signin" , {
-  //     email: details.email
-  //   })
-  // };
-
   return (
     <div>
       <BrowserRouter>
@@ -51,7 +45,6 @@ const App = () => {
       </BrowserRouter>
 
       <div>
-        {/* <!--Verically centered modal--> */}
         <TEModal
           show={showVerticalyCenteredModal}
           setShow={setShowVerticalyCenteredModal}

@@ -24,6 +24,11 @@ const SideBarDashboard = () => {
   const [color, setColor] = useState("");
   const [fontSize, setFontSize] = useState(0);
   const [openPen, setOpenPen] = useState(false);
+  const [penId, setPenId] = useState(null);
+  const [tool, setTool] = useState("pen");
+  const isDrawing = useRef(false);
+  const [usePen, setUsePen] = useState("");
+  const [penColor, setPenColor] = useState("#df4b26");
   const handleFileInputChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -80,6 +85,9 @@ const SideBarDashboard = () => {
         id: count,
         x: 300,
         y: 300,
+        fontstyle: "normal",
+        fontfamily: "Sans-serif",
+        textdecoration: "",
         type: "text",
         fill: "#000",
         text: "Add a textbox",
@@ -96,6 +104,9 @@ const SideBarDashboard = () => {
         id: count,
         x: 300,
         y: 300,
+        fontstyle: "normal",
+        fontfamily: "Sans-serif",
+        textdecoration: "",
         type: "text",
         fill: "#000",
         text: "Add a Heading",
@@ -111,6 +122,9 @@ const SideBarDashboard = () => {
       {
         id: count,
         type: "text",
+        fontfamily: "Sans-serif",
+        fontstyle: "normal",
+        textdecoration: "",
         x: 300,
         y: 300,
         fill: "#000",
@@ -128,6 +142,9 @@ const SideBarDashboard = () => {
         id: count,
         x: 300,
         y: 300,
+        fontstyle: "normal",
+        fontfamily: "Sans-serif",
+        textdecoration: "",
         type: "text",
         fill: "#000",
         text: "Add a sub Heading",
@@ -231,6 +248,19 @@ const SideBarDashboard = () => {
     ]);
   };
 
+  const handleLine = () => {
+    setCount(count + 1);
+
+    setText([
+      ...text,
+      {
+        id: count,
+        type: "line",
+        strokewidth: 2,
+        fill: "#1e8fc8",
+      },
+    ]);
+  };
   const handleIncrement = () => {
     const getValue = text.map((item) =>
       item.id === id ? { ...item, fontsize: item.fontsize + 1 } : item
@@ -279,16 +309,87 @@ const SideBarDashboard = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    console.log(dataURL);
   };
 
-  const handleOpenPen = () => {
-    setOpenPen(!openPen);
-    setOpen(false);
-    setOpenText(false);
-    setOpenShapes(false);
+  const handleChangeColorPen = (e) => {
+    setPenColor(e.target.value);
+  };
+  const handleMouseDown = (e) => {
+    isDrawing.current = true;
+    const pos = e.target.getStage().getPointerPosition();
+
+    if (tool == "pen") {
+      if (usePen == "pencil") {
+        setText([
+          ...text,
+          {
+            type: "drawing",
+
+            color: penColor,
+            stroke: 2,
+            tool,
+            points: [pos.x, pos.y],
+          },
+        ]);
+      } else if (usePen == "pentel") {
+        setText([
+          ...text,
+          {
+            type: "drawing",
+
+            color: penColor,
+            stroke: 4,
+            tool,
+            points: [pos.x, pos.y],
+          },
+        ]);
+      } else if (usePen == "ballpen") {
+        setText([
+          ...text,
+          {
+            type: "drawing",
+
+            color: penColor,
+            stroke: 6,
+            tool,
+            points: [pos.x, pos.y],
+          },
+        ]);
+      }
+    } else if (tool == "eraser") {
+      setText([
+        ...text,
+        {
+          type: "drawing",
+          color: penColor,
+          stroke: 6,
+          tool,
+          points: [pos.x, pos.y],
+        },
+      ]);
+    }
   };
 
-  const [penId, setPenId] = useState(null);
+  const handleMouseMove = (e) => {
+    // no drawing - skipping
+    if (!isDrawing.current) {
+      return;
+    }
+    const stage = e.target.getStage();
+    const point = stage.getPointerPosition();
+    let lastLine = text[text.length - 1];
+    // add point
+    lastLine.points = lastLine.points.concat([point.x, point.y]);
+
+    // replace last
+    text.splice(text.length - 1, 1, lastLine);
+    setText(text.concat());
+  };
+
+  const handleMouseUp = () => {
+    isDrawing.current = false;
+  };
 
   const handleSelect = (id) => {
     setPenId(id);
@@ -301,6 +402,102 @@ const SideBarDashboard = () => {
 
     console.log(id);
   };
+
+  const handleOpenPen = () => {
+    setOpenPen(!openPen);
+    setOpen(false);
+    setOpenText(false);
+    setOpenShapes(false);
+  };
+
+  const handleTimeNewRoman = () => {
+    if (id) {
+      const updatedTextElements = text.map((item) =>
+        item.id === id ? { ...item, fontfamily: "Serif	" } : item
+      );
+      setText(updatedTextElements);
+    }
+  };
+
+  const handleMonospace = () => {
+    if (id) {
+      const updatedTextElements = text.map((item) =>
+        item.id === id ? { ...item, fontfamily: "Monospace		" } : item
+      );
+      setText(updatedTextElements);
+    }
+  };
+
+  const handleCursive = () => {
+    if (id) {
+      const updatedTextElements = text.map((item) =>
+        item.id === id ? { ...item, fontfamily: "Cursive			" } : item
+      );
+      setText(updatedTextElements);
+    }
+  };
+
+  const handleFantasy = () => {
+    if (id) {
+      const updatedTextElements = text.map((item) =>
+        item.id === id ? { ...item, fontfamily: "Fantasy				" } : item
+      );
+      setText(updatedTextElements);
+    }
+  };
+
+  const handleArial = () => {
+    if (id) {
+      const updatedTextElements = text.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              fontfamily: "Arial, Helvetica, sans-serif",
+              fontstyle: "normal	",
+            }
+          : item
+      );
+      setText(updatedTextElements);
+    }
+  };
+
+  const handleBold = () => {
+    if (id) {
+      const updatedTextElements = text.map((item) =>
+        item.id === id ? { ...item, fontstyle: "bold	" } : item
+      );
+      setText(updatedTextElements);
+    }
+  };
+
+  const handleItalic = () => {
+    if (id) {
+      const updatedTextElements = text.map((item) =>
+        item.id === id ? { ...item, fontstyle: "italic	" } : item
+      );
+      setText(updatedTextElements);
+    }
+  };
+
+  const handleDecoration = () => {
+    if (id) {
+      const updatedTextElements = text.map((item) =>
+        item.id === id ? { ...item, textdecoration: "underline	" } : item
+      );
+      setText(updatedTextElements);
+    }
+  };
+
+  const handleDoubleCLickDecoration = () => {
+    if (id) {
+      const updatedTextElements = text.map((item) =>
+        item.id === id ? { ...item, textdecoration: "	" } : item
+      );
+      setText(updatedTextElements);
+    }
+  };
+
+  console.log();
   return (
     <div className="w-full ">
       <div className="flex  ">
@@ -347,6 +544,7 @@ const SideBarDashboard = () => {
                 rectangle={handleRectangle}
                 circle={handleCircle}
                 star={handleStar}
+                handleLine={handleLine}
               />
             </div>
           )}
@@ -422,16 +620,25 @@ const SideBarDashboard = () => {
                 addHeading={addHeading}
                 addSubHeading={addSubHeading}
                 addLittleBitBody={addLittleBitBody}
+                handleTimeNewRoman={handleTimeNewRoman}
+                handleMonospace={handleMonospace}
+                handleCursive={handleCursive}
+                handleFantasy={handleFantasy}
               />
             </div>
           )}
 
           {openPen && (
-            <div className="bg-[#1E1E1E]  w-[5rem] h-[20rem] absolute left-[5.7em] top-[15em] rounded-md flex items-center justify-center">
+            <div className="bg-[#1E1E1E]  w-[5rem] h-[20rem] py-5  rounded-md mt-48">
               <Pen
                 handleSelect={handleSelect}
                 penId={penId}
                 resetSelect={resetSelect}
+                setUsePen={setUsePen}
+                setTool={setTool}
+                setPenColor={setPenColor}
+                handleChangeColorPen={handleChangeColorPen}
+                penColor={penColor}
               />
             </div>
           )}
@@ -477,51 +684,33 @@ const SideBarDashboard = () => {
               </button>
             </div>
 
-            <div>
+            <div onClick={handleArial}>
               <img
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAA8CAYAAAAkNenBAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAOpSURBVHgB7VkxchNBEJyT9ADxAs6ZnZmMDPECVPYDLP/AvADzAoof4IzElvwCTiERCp1xIRkiI7FNj7mrUhW3szO7IxmV1VUqn29m77Z3Z3d69gpyxng8Lnu93hdclgGX+u7u7vVsNqvJET1yRlEU5xQmwSj7/f47csY6iLyK+dzf34/JGa5EEFYjkmejxbDxdYMrEczGxODrOiveRKJhteL7hhzhRgShcki6sGpRNm1c4EYEW+6IjEAbt/ByI4KdyBwqaKMOxRgKckCTBL932dDZ6uFFRTHqsiM5PkNyXFImXGZECivYPoHEtWCfkEcfyAEY9ZOQ7fb2do5RnwltXXav7NBCWA0xqj+7bOjkYjqdvuDro6MjDr2yw20Jonu54ZU9I9BNI8E8by9AKhRew8FgkL3os4lgNINbKDo/67ru8MvehrOJCNm8RrhU7T/NdWf4PDqRiEislPcY2SIyi4gkEmGrOm5fC/5Zs5JLJLhIse3+02lpG84VkclEJJHI2bxrO+V7babvAIvIkhKRTETK5lImh20uPHNCqf2hREgZGSFUpdhyRGRSZpdEIlBfXV3tSe2R5VkJDLtsqSIyaUYitUdFEWDkL4RnTygBSUQkkYgRvaB4e3cRaSbCIjFUWwDL1WwuYEGBLI9nH/I7yAgzEUkkYjTnpECzDS8CZiZhruXNRCSRiPiekhLSFo3BOiEjzESkDMxFFCkRKbbMcsVEpBF2w8DLF5aD6cY35G8WkSYikZNE9Wy0EIots4gcWJwlkQjbwqqVuI1g4xA+I+2ztI4sErGYv9EG0dTytcZXHVopJ4m5sGR5yxoxb4m5sIhIVWhFROJaoRWRqhl5jLBaefdE5adxkkTiuqEVkdHQkk4SNwTVSWQ0j7BIxKgE7djvz2D/RXl4jt95wNaKyIoERImwSERnQ+b68vLyIzkAVSMnv07504jISmofXSORY5qKnCDJFY2IFIlIIpGhqQa1wDqcCeaoiBSJxD43K6tBFVACVBSoGpu+iLMSIxLMrFIopCBSNUZPIoNEYp+bLdWgFlLVSJGTyCARdFSsmy3VoBZS1cgQv1UKD61DNms1qAU/UwovqU/9kOHm5qY+ODjgBFLS30X48MOL+GWnsP+gNWB/f/8r/rxEmP1efS9+7/E98jPtsMMOTxsPsrY5NDYfHP8n4IPzZXF8fDzGduqepTcJ1oQ9kPhAWw5wOOfMXtL2o+wJn4u3BixrmMhbCp+KbwNYNp3+ASm6pCBcmijPAAAAAElFTkSuQmCC"
+                src="https://kanbaaaa.onrender.com/assets/normal-D6hmnvee.png"
                 className="w-7 h-7"
               />
             </div>
 
-            <div>
+            <div onClick={handleBold}>
               <img
                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAABNCAYAAAD6ggcWAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAPESURBVHgB5ZxNVhpBFIUvrQsgO2hnOtLMMpOsIBwdZaRZQdhBcJgRuAJxASpZQXAFwZHO7CWYuUruxYKDTQPS/TDVxXdO2Vjy4+36e/VePSrIoF6v16IoOuLDGkuM1fMwGAwSXVlu+LjHa7/b7SYwpjL5C4XuVSqVFksNHiDhvPGdp6enayvxY8GHh4dH/IAO/KXz/Px8UlT4hn6oC7NVu/Ab9b7Gzs4Obm9vr5GTYQsfHBzc433GqhUJW/tzntaOKPYY5RIrYo7te/7vDSxJxHF7hPLSougfy7wg4rjYQ7lpLiM6Yqmi/DTf2r0jhENLq82iJ4UkGJzIzih6bo8NSjBeZu+54zk0waIxr2uHKBhceWa2cqiCa7NaOUjBgqLrWfWbsGFo2yIfmmhiXr+w1GEEBcuCnFqbK1ywByhOcnl5uYWCsBtK/G8Y2fZshI/cYPQn67zq0tr9uJ6SwADevNpUHTzDif4GA9itd9N1Xk5aFN1zfq1C8MbF6TpvZ2m2zi8UhO8Rp+t8XpYesAJ8FrySbavPgvdREOfrfoWXgrUew8YI+Zuu8FIwJ5szGMD36afrrExLE7R51yYeLyGewvC9/qTrvBDsTMqR7Ws2WT0+Pk457K0Ex86Zn4cqVjAjy3ChATO1tFm2cAyPUBAusx5hklxcXJxn/SFUj0dz1t9CFDyzdUVoghd6XkL0S88NDobYpecG10KdpWcG14J102JGcC1kwZnBtaAFIyO4FrpgoeDa+JTDOgiW5dUaPV4XwbXRWF4LwYJjebhMWW4PExQnxuqQBdb0KpgmNMGwNTTJaHaNYQjt7C2vfFrCRftUOmyMJl6Em8AbWfd6DLPXNHk5gREKrnk/aUk0/VOnMIBdeq8UszQFN2EQa2ILV0shWN5Hij5HccohWGRFEXJQHsEcfwkMWBtLa0RpBDtjpChJmVr4OwqieHEpBBvmZdx4L9gFx1swQOFTrwW7lECdzDOJLirDzbvNg3ApgQ13XtIEjt9hLqOV4CrHmckxBawowZM9pa2rmWCWY3iMurOu62J4dEZpe+sgWBHF8Z46eMEKjk8mZYYuuJMOjocs+FVXHhHsoZZZ+cVBnvGYl0wtwQnCYWHmuBKmc+fTe0bXZbEk8560qW92sLRZ/wPyZp7Qndt+y5M37u7uku3t7Q8U/QnlQkJ/slW/Xl1d9d76oqEt7fy++yVJj5fQUwptZx0eXcT4i0sUP6XgtqfdW8J6FCkjopdH6IhKukIeBndWcXeixRO8I/I98bNV+tzl3CiPCUb8AzMsZ9jkNJq4AAAAAElFTkSuQmCC"
                 className="w-7 h-7"
               />
             </div>
 
-            <div>
+            <div onClick={handleItalic}>
               <img
                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAABPCAYAAABLX43XAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAANZSURBVHgB1ZvNcRNBEIVbKw4cHYI5Shd05MYSASpFYDIwEYAjoIgAk4AkImCJwCYCFIIC0A/dQkuBmD80r7vtr8ql8qhqd171vPl7pQEBmU6nl4PB4BP/TfjfC7JlzX+38/n87ZCAjMfju6Ogp2SPvPPFaDQaDAgEV2nSNM0d+bNuCMeaHggwUcvlcrXf7ztyhvvwGVkpeeAbeSj5ICPlZrFYXMM8dQ4yW7IPf4S+2+12z6T6dAbQSv33y5umDbVzte/PFXR4LjnCnW9D7bws3FMFrqK48y9D7VzBJVXgJkr8xB+Xoe82m803qsBNVMZPVWue5/B7HWmvqpLgKWoSauRKVflJcBEl+0SK+ImpmvkEF1Hsp1iVulo/HZ5PPsT89J0AeIlqQ40IPwnme7/UuYtPrZD+mFcqsT51hHoHGcOdD/qJt0zV61OPuajjHcY/8FGjIxCmothPLYVvmdY8lXcEwlRUYn2qXnD/eg8ZkvDTFwJiKoo734bakX4SzEQd/RRC/PQ4h19ifYJN5b/fRUZw54NHdx6SHYExEcVD78LKT4JVpSaR9hXaT4KJKK7SNNTOQxJy1DjFqlLPQ408eSxIAXVRKT9tt9vHWanhcNhGvlLxk6Auime3NvJVR0qoi4pdLWusTz2qoo5Xy8HpnP0E30n0qIpiP0WPGjVRTQ5VUeyn4PpUG9XkUBXFnY+tT5CrsBhqolJ+4qhGZX3qUROlFX0WvZuUiEWfBIhqcqiJiq1PPCN+JWVURKWimtroswQVUdpRTfb9pINqVJNDS5Ra9FkCXJR29FkCXFQqqrHw06EPhCd21FCf9Xo0RLWhRo2rsBjQeNQi+iwBWimL6LOoHwTEKqrJARWViD5NpvIemCir6LMEmKjU+YmMgYlKRDWmfhJgoiyjmhwQUZbRZwkQUYmoxmxr9Ceo4Wca1eSoFuUR1eRAVMo0+iyhWpR19FkCQlTsVwAufjq8myoQP5FDVJOjSlQm+lyRE1WiYlENKUafJVSJikU1mtFnCWeL8oo+SzjcG8xms3f8cU32PzgWbnkY3yA9+IQFfaBfgry44uF6yZ+vCIQMvytyRrZZx+EMwfXneyfAhr6I+kj+QPeJDV8yvud9mggzuec+YS13gjxRwPwk/AT/h0y2i6vE0wAAAABJRU5ErkJggg=="
                 className="w-7 h-7"
               />
             </div>
 
-            <div>
+            <div
+              onClick={handleDecoration}
+              onDoubleClick={handleDoubleCLickDecoration}
+            >
               <img
                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE0AAABUCAYAAADH0LrjAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAPiSURBVHgB7ZwxUxNBFMff3VHYGT6BoWKowM7O0FleoLISSivkExhLK6SzA0sLSOzsiJ2doYLOa62MnQUk/t+wmYkxIZt3by8X834zNwlkc7v3u929vb23ITIMwzAMwzDKSEQBSNO0ihfeslarlVHBDOXfRf4dUkZVGgq7FUXREbba4H/9fr+Nbb8IeSwLeZ+M5N/BVtfMX00aFziO4294Wxnzcdbr9bZDinP5X9BdDRuli/wfa+UfkxJ8hmm8MKbqPg8G9t+g8cKYimb+KjXNneXv09LhbK/ibHdJGeRfQf4/p6VD/msatU2lpiVJsuWZ1DfdrHjtF2JrpICKNHS0FVoi1Pq0ZcKkCTBpAkyaAJMmwKQJMGkCTJoAkybApAkwaQJMmgCTJsCkCTBpAkyaAJMmwKQJMGkCTJoAkybApAkwaQJMmoBCpa2srDyk/wAVab1eL/NMt0YBiOPYKyzBt5xT8yMdMp9EURRtUgD6/b5vjIhK8I2WNK/C4OBSCgBOxlOfdFpRkSrSXPhU5pG0kqZpjRRx+6tOS8cRkaSE2oUAhfrikw614jUpgv3teaYrnzQUqu2ZrqZV23Z2dvawvxc+aXGxaJESatJwZeJCefVtOIATF4Etxn3fu9be3Nx4tQQf1KS5fq3tmZxjcJtScS5cdFJQ8jhONcNWVQe3qG3HvmkhbYsPfFZxQ1HkVd/voFwfSBH1xRf1ev1iOI7fkwYf2H1BxK52HeDtK5ocRf4PvI6h2WxukyLq0riTd01HQosvKLe3t5fu70qSJI8gNOWaSTPIGuDWD6iuWgmyzAe17R0O8oDmz+n5+fk+KRPkhh1NokGet1YB4VUybygAQWoaw+ukXIc9F0I0ywHBpoa4wCi4etPwZD+UMCahgFxfX3c2NjZ+4e0zKo5D9GPvKSBBpTFXV1df19fXL3FhYHEPKBw8eH0ZWhgTrE8bZcrSwlyEWNN5H4VJG4Cb7AZeeDiisZ6Ka9cxaleDCiR48xwFzbWN5voRb1fRZFmcRB7LeosLzXOM9j9TwRRe00ZBs+XRPs/obrpR/yQyNMFP2Hg2pRNi3agvc5c2Co/v6O/al9HdAv65STKM+aD5awmiWYgCUfuNjtzSdnd3U3TORxRg/BUAvok/hLxczwtySXPCmrRg8BOss7Mz8WyuWJqbSZ1p2rlEdN3PTYiuyOJZDsyo1mgxhTF8wsVP+8XSZoifKCtVEmLxaQLySMtogckzqyyWNssT9RKS5XniLp7lwKzsb8xW/HA32wsFT8PnGejmmhri6Ww3K/uEyn03MCBzwuY3uB1mmW6jDMMwDMMwjHLyB0qBatuPu8lJAAAAAElFTkSuQmCC"
-                className="w-7 h-7"
-              />
-            </div>
-
-            <div>
-              <img
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE8AAABWCAYAAACO7cvVAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFVSURBVHgB7d0xToRQEMbxeWhhqTegpPUGegPCCdbSSu3sdEsr4w3WCzw4AqU3gJIjcAJwiGbbzb4hu5D3/yUDyZaT7CN5XybjRBVF8aavZ61rwSG91s57/+K0cZ/y1zgcZ5voYyMI8ZQIgk3N+xIcbRzH74umaeosy26cc5n+diU4ZPpgfJRl+SoAAAAAAAAI4KZHZBnGbhiGbVVVnRhdRphhbPTuMtX3vRhFmWFo8+7yPE/FKOYMoxejWDMMPfIqc/NiyzB6DW5+tB7btjU3DwAAAAAAACFWlWHoVVKt9TBH/jCHNc5hdBrg3M5xmWm1xgwj/a+zW2uGsYjjZY0ZRqd/2VoWIPHev+shPDVw8Xf60wdDzztz3goAAAAAAIBzYg7DgDkMA+YwDJjDMGAOw4A5DAAAAAAAAJxYjBmGFfswZsA+DAP2YViwDyMQ+zDC7Pdh/ALF1pd2PvgvDAAAAABJRU5ErkJggg=="
-                className="w-7 h-7"
-              />
-            </div>
-
-            <div>
-              <img
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG0AAABmCAYAAADBPx+VAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAHFSURBVHgB7dyxccIwFMbxJ5OCEjagdJkRyAaKJyATAB0dR0lFmABnAdsbhBHSuWWDMAHOE7CADnS24v/vTojzHYV5kq3iu2dEZVm21mmhYyToqrOOvCiKpdGC7eRWMMRhk+jHTBCTeSKIjivaXhCNpmm+BnVdH9M0HRtjUr02FHSVO4hsy7JcCQAAAAAAAAAAAAAArTLiyVo7SpLkoF+nQk7yUfnlcllWVXX2+ZF3GssY86mTFQr2DDP9P0vx5LXT7rvsV/BUutvGPruN3GOEvIrmVkPTNEfBM+XB32latHcXmBQ8yhWqcgcRAQAAAAAAAAAAAAAgKt65R1/W2okx5qBjKv9fdc8xniSgFwksSZJvnSbSD1YXp8uDvklAQSN0ustepT8Fu3JPlPt9B0PuMUJBi6bP9p8e5iRP7r4loOA7TYv2oVMlPeAWqB5Egr7PAAAAAAAAAAAAAABoH/0e20W/xwjR7zFW9HvsAfo9to9+jxGh3yMAAAAAAAAAAAAAIFLXNFaWZWudFkIsrstcPCEvimJptGA7uRUMcdi4YM9MEJM5uccIuaLtBdFw8cVBXdfHNE3HxphUrw0FXeUOItuyLFd/m8ugXzsYywYAAAAASUVORK5CYII="
-                className="w-7 h-7"
-              />
-            </div>
-
-            <div>
-              <img
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAF4AAABiCAYAAADZamS4AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAGZSURBVHgB7dyxbcJAFMbxd6ZJGTagPLqMkEwQdCzABiRdOuQyFWICyALYG4QtTEk2IAtA3hkpRCmg8Z3N6f+TjkOu0Ctw8T59RpRzbqbXi557QUh7Pav1ev1qdOhzOQ0d8eSZfkwEsU0zQSv84BeCqI7H40evqqqNtbZvjLH67E4Qkn+5vhdF8SYAAAAAAAAAAACpMhLAeDye6nrLJxcGgr/O8Q5pmHNuotdScEkeImXwLLim+XiH/sV8C64KMfiV4KI63iEN2263u+Fw+KVfH4Qs5n/EOwAAAAAAAAAAQPqCxDuaNhqNBsaYpZ5HuW3h4h1N80PPsuxT0sro5J0vkej1en53O5C0dL+9QzfySS7MOz/4w+FQ6rWThPh4R+cHX5blXof/pD92I7fPv1zzoihoxAIAAAAAAAAAAOmivSMu2jtaRntHS2jvaAvtHS2gvSM+2jsAAAAAAAAAAED66pSBc26ml49jsDEK6xzv0KHP5TR0xFPHOyaC2Lrf3pEqP/iFIKo63lFV1cZa2zfGWH12JwjpN97xAwZXjjQ+LyYQAAAAAElFTkSuQmCC"
                 className="w-7 h-7"
               />
             </div>
@@ -554,12 +743,14 @@ const SideBarDashboard = () => {
                   width={1100}
                   height={550}
                   ref={stageRef}
+                  onMouseDown={handleMouseDown}
+                  onMousemove={handleMouseMove}
+                  onMouseup={handleMouseUp}
                 >
                   <Layer>
                     <div>
                       {text.map((item, index) => (
                         <div
-                          draggable
                           onClick={() => {
                             setId(item.id);
                             handleGetSize(item.id);

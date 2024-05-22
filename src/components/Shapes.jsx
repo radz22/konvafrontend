@@ -1,6 +1,6 @@
 import React from "react";
 
-const Shapes = ({ triangle, rectangle, circle, star }) => {
+const Shapes = ({ triangle, rectangle, circle, star, handleLine }) => {
   return (
     <div className="w-full flex items-center justify-center  flex-col mt-2">
       <img
@@ -24,6 +24,12 @@ const Shapes = ({ triangle, rectangle, circle, star }) => {
         className="h-16	w-16	 	 rounded-xl	"
         src="https://kanbaaaa.onrender.com/assets/tri-xX7Hk5eR.png"
         onClick={triangle}
+      />
+
+      <img
+        className="h-16	w-16	 	 rounded-xl mt-2	"
+        src="https://kanbaaaa.onrender.com/assets/line-DHuuFtdG.png"
+        onClick={handleLine}
       />
     </div>
   );

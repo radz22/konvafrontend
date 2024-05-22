@@ -7,6 +7,7 @@ import {
   Circle,
   RegularPolygon,
   Star,
+  Line,
 } from "react-konva";
 import useImage from "use-image";
 
@@ -33,6 +34,7 @@ const AddText = ({ item, isSelected, onSelect, onChange }) => {
     });
   };
 
+  console.log(item);
   return (
     <>
       {item.type === "text" && (
@@ -40,11 +42,14 @@ const AddText = ({ item, isSelected, onSelect, onChange }) => {
           text={item.text} // Use the input value provided from the parent component
           x={item.x}
           y={item.y}
+          fontFamily={item.fontfamily}
+          fontStyle={item.fontstyle}
           onTap={onSelect}
           fill={item.fill}
           fontSize={item.fontsize * scale}
           draggable
           onClick={onSelect}
+          textDecoration={item.textdecoration}
           ref={shapeRef}
           onTransform={(e) => {
             const node = shapeRef.current;
@@ -220,6 +225,42 @@ const AddText = ({ item, isSelected, onSelect, onChange }) => {
         />
       )}
 
+      {item.type === "line" && (
+        <Line
+          x={100}
+          y={100}
+          points={[120, 1, 120, 100]}
+          stroke={item.fill}
+          strokeWidth={item.strokewidth}
+          draggable
+          onClick={onSelect}
+          ref={shapeRef}
+          onTransform={(e) => {
+            const node = shapeRef.current;
+            const scaleX = node.scaleX();
+            const scaleY = node.scaleY();
+          }}
+          onTransformEnd={(e) => {
+            const node = shapeRef.current;
+
+            onChange({
+              ...item,
+              x: node.x(),
+              y: node.y(),
+              width: Math.max(5, Math.round(node.width() * scale)),
+              height: Math.max(5, Math.round(node.height() * scale)),
+            });
+          }}
+          onDragEnd={(e) => {
+            onChange({
+              ...item,
+              x: e.target.x(),
+              y: e.target.y(),
+            });
+          }}
+        />
+      )}
+
       {item.type === "image" && (
         <KonvaImage
           image={img}
@@ -256,6 +297,20 @@ const AddText = ({ item, isSelected, onSelect, onChange }) => {
               y: Math.round(e.target.y() / 20) * 20,
             });
           }}
+        />
+      )}
+
+      {item.type === "drawing" && (
+        <Line
+          points={item.points}
+          stroke={item.color}
+          strokeWidth={item.stroke}
+          tension={0.5}
+          lineCap="round"
+          lineJoin="round"
+          globalCompositeOperation={
+            item.tool === "eraser" ? "destination-out" : "source-over"
+          }
         />
       )}
       {isSelected && (

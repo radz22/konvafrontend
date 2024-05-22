@@ -5,6 +5,10 @@ const SideBartext = ({
   addHeading,
   addSubHeading,
   addLittleBitBody,
+  handleTimeNewRoman,
+  handleMonospace,
+  handleCursive,
+  handleFantasy,
 }) => {
   return (
     <div className="w-full px-2 py-4">
@@ -37,26 +41,38 @@ const SideBartext = ({
       </div>
       <div className="flex items-center justify-center mt-5 gap-2 flex-col">
         <div>
-          <button className="text-base text-white mt-3 font-semibold">
+          <button
+            className="text-base text-white mt-3 font-semibold"
+            onClick={handleTimeNewRoman}
+          >
             Times New Roman
           </button>
         </div>
 
         <div>
-          <button className="text-base text-white mt-3 font-semibold">
-            Kanit
+          <button
+            className="text-base text-white mt-3 font-semibold"
+            onClick={handleMonospace}
+          >
+            Monospace
           </button>
         </div>
 
         <div>
-          <button className="text-base text-white mt-3 font-semibold">
-            Arial
+          <button
+            className="text-base text-white mt-3 font-semibold"
+            onClick={handleCursive}
+          >
+            Cursive
           </button>
         </div>
 
         <div>
-          <button className="text-base text-white mt-3 font-semibold">
-            Helvetica
+          <button
+            className="text-base text-white mt-3 font-semibold"
+            onClick={handleFantasy}
+          >
+            Fantasy
           </button>
         </div>
       </div>

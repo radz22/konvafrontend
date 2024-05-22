@@ -1,6 +1,14 @@
 import React from "react";
 
-const Pen = ({ penId, handleSelect, resetSelect }) => {
+const Pen = ({
+  penId,
+  handleSelect,
+  resetSelect,
+  setUsePen,
+  setTool,
+  handleChangeColorPen,
+  penColor,
+}) => {
   return (
     <div className="flex items-center justify-center flex-col gap-3">
       <div>
@@ -11,6 +19,8 @@ const Pen = ({ penId, handleSelect, resetSelect }) => {
           }`}
           onClick={() => {
             handleSelect(1);
+            setUsePen("pencil");
+            setTool("pen");
           }}
           onDoubleClick={() => resetSelect(1)}
         />
@@ -24,6 +34,8 @@ const Pen = ({ penId, handleSelect, resetSelect }) => {
           }`}
           onClick={() => {
             handleSelect(2);
+            setUsePen("pentel");
+            setTool("pen");
           }}
           onDoubleClick={() => resetSelect(2)}
         />
@@ -37,11 +49,21 @@ const Pen = ({ penId, handleSelect, resetSelect }) => {
           }`}
           onClick={() => {
             handleSelect(3);
+            setUsePen("ballpen");
+            setTool("pen");
           }}
           onDoubleClick={() => resetSelect(3)}
         />
       </div>
 
+      <div className="">
+        <input
+          type="color"
+          value={penColor}
+          onChange={handleChangeColorPen}
+          className="w-10  outline-none h-10 mt-1"
+        />
+      </div>
       <div>
         <img
           src="https://kanbaaaa.onrender.com/assets/eraser-C4grhBXJ.png"
@@ -50,6 +72,8 @@ const Pen = ({ penId, handleSelect, resetSelect }) => {
           }`}
           onClick={() => {
             handleSelect(4);
+            setTool("eraser");
+            setUsePen("eraser");
           }}
           onDoubleClick={() => resetSelect(4)}
         />
