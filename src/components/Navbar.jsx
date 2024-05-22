@@ -6,7 +6,7 @@ const Navbar = ({ clickButton }) => {
   const [open, setOpen] = useState(false);
   const fetchData = async () => {
     await axios
-      .post("http://localhost:3000/userRoutes/userdata", {
+      .post("https://konvaserver.onrender.com/userRoutes/userdata", {
         email: localStorage.getItem("email"),
       })
       .then((res) => {
