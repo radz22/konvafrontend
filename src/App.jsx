@@ -15,7 +15,7 @@ const App = () => {
 
     if (decode) {
       axios
-        .post("http://localhost:3000/userRoutes/google", {
+        .post("https://konvaserver.onrender.com/userRoutes/google", {
           email: decode.email,
           photo: decode.picture,
           name: decode.name,
