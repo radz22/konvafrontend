@@ -22,7 +22,11 @@ const Pen = ({
             setUsePen("pencil");
             setTool("pen");
           }}
-          onDoubleClick={() => resetSelect(1)}
+          onDoubleClick={() => {
+            resetSelect(1);
+            setTool("");
+            setUsePen("");
+          }}
         />
       </div>
 
@@ -37,7 +41,11 @@ const Pen = ({
             setUsePen("pentel");
             setTool("pen");
           }}
-          onDoubleClick={() => resetSelect(2)}
+          onDoubleClick={() => {
+            resetSelect(2);
+            setTool("");
+            setUsePen("");
+          }}
         />
       </div>
 
@@ -52,7 +60,11 @@ const Pen = ({
             setUsePen("ballpen");
             setTool("pen");
           }}
-          onDoubleClick={() => resetSelect(3)}
+          onDoubleClick={() => {
+            resetSelect(3);
+            setTool("");
+            setUsePen("");
+          }}
         />
       </div>
 
@@ -75,7 +87,11 @@ const Pen = ({
             setTool("eraser");
             setUsePen("eraser");
           }}
-          onDoubleClick={() => resetSelect(4)}
+          onDoubleClick={() => {
+            resetSelect(4);
+            setTool("");
+            setUsePen("");
+          }}
         />
       </div>
     </div>

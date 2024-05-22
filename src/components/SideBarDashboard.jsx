@@ -25,7 +25,7 @@ const SideBarDashboard = () => {
   const [fontSize, setFontSize] = useState(0);
   const [openPen, setOpenPen] = useState(false);
   const [penId, setPenId] = useState(null);
-  const [tool, setTool] = useState("pen");
+  const [tool, setTool] = useState("");
   const isDrawing = useRef(false);
   const [usePen, setUsePen] = useState("");
   const [penColor, setPenColor] = useState("#df4b26");
@@ -356,6 +356,8 @@ const SideBarDashboard = () => {
             points: [pos.x, pos.y],
           },
         ]);
+      } else if (usePen == "") {
+        isDrawing.current = false;
       }
     } else if (tool == "eraser") {
       setText([
@@ -368,6 +370,8 @@ const SideBarDashboard = () => {
           points: [pos.x, pos.y],
         },
       ]);
+    } else if (tool == "") {
+      isDrawing.current = false;
     }
   };
 
